@@ -39,6 +39,20 @@ cd radar-economia-credito
 ./rodar_tudo.sh
 ```
 
+**Se você já tinha sinais capturados antes do painel/relatório mensal
+existirem** (tags no formato antigo, sem `data_ref`/`valor`), rode uma vez,
+depois de atualizar o código (`git pull`):
+
+```bash
+source .venv/bin/activate   # ou deixe o rodar_tudo.sh criar o venv primeiro
+python migrar_tags.py
+```
+
+Isso preenche `data_ref`/`valor` nos sinais antigos a partir do `resumo` já
+salvo — nada é apagado, e rodar de novo não duplica nem tem efeito (é
+seguro repetir). Sem isso, esses sinais não aparecem no dashboard nem no
+relatório mensal (mas continuam intactos na base).
+
 Isso faz backup do banco, cria o `.venv`, instala as dependências, copia
 `.env.example` para `.env` na primeira vez (preencha `FRED_API_KEY`
 depois), roda as três ingestões, gera `relatorio_AAAA-MM-DD.md` e atualiza
