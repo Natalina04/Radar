@@ -18,7 +18,7 @@ validacao.py           # intervalo plausível por indicador (controle de dado)
 logging_utils.py       # log de auditoria de execução (logs/ingestao.log)
 backup_db.sh           # backup do banco antes de cada rodada (backups/)
 analise.py             # classificação de tendência + frases de leitura (sem LLM)
-dashboard.py           # painel visual (gera dashboard.html — boletim de cenário)
+streamlit_app.py       # painel visual interativo (boletim de cenário)
 CONTROLES.md           # controles internos do projeto, mapeados ao COSO
 storage/
   schema.sql            # DDL da tabela "sinais"
@@ -51,14 +51,14 @@ python migrar_tags.py
 
 Isso preenche `data_ref`/`valor` nos sinais antigos a partir do `resumo` já
 salvo — nada é apagado, e rodar de novo não duplica nem tem efeito (é
-seguro repetir). Sem isso, esses sinais não aparecem no dashboard nem no
+seguro repetir). Sem isso, esses sinais não aparecem no painel nem no
 relatório mensal (mas continuam intactos na base).
 
 Isso faz backup do banco, cria o `.venv`, instala as dependências, copia
 `.env.example` para `.env` na primeira vez (preencha `FRED_API_KEY`
-depois), roda as três ingestões, gera `relatorio_AAAA-MM-DD.md` e atualiza
-`dashboard.html`. Rode de novo sempre que quiser atualizar os dados —
-duplicatas são ignoradas automaticamente.
+depois), roda as três ingestões e gera `relatorio_AAAA-MM-DD.md`. Rode de
+novo sempre que quiser atualizar os dados — duplicatas são ignoradas
+automaticamente. Depois, abra o painel visual (ver seção abaixo).
 
 ## Setup manual
 
@@ -82,8 +82,8 @@ python -m ingest.bacen_sgs
 python -m ingest.fred
 python -m ingest.mercado
 
-# painel visual (HTML autocontido, abra no navegador/Viewer)
-python dashboard.py
+# painel visual interativo (abre um servidor local)
+streamlit run streamlit_app.py
 
 # relatório operacional (lista bruta)
 python -m reports.relatorio
@@ -96,21 +96,28 @@ python -m reports.relatorio_mensal
 
 ## Painel visual
 
-`dashboard.py` gera `dashboard.html` — um boletim de cenário, não uma lista
-de gráficos soltos: resumo executivo em prosa (leitura do cenário por
-seção), depois Brasil / Global / Mercado / Regulatório, cada indicador com
-KPI + variação + gráfico de série histórica + uma frase de leitura. Pontos
-fora do intervalo plausível (ver Controles internos, abaixo) aparecem como
-círculo vermelho no gráfico e um aviso no texto — nunca escondidos.
-
-Os gráficos são **SVG puro, sem JavaScript** (sem Plotly, sem nenhuma
-dependência de visualização) — funcionam em qualquer visualizador,
-inclusive o preview embutido do Posit Cloud, que bloqueia `<script>` por
-segurança. A seção Regulatório mostra a contagem de normas capturadas
+`streamlit_app.py` é um boletim de cenário interativo, não uma lista de
+gráficos soltos: resumo executivo em prosa (leitura do cenário por seção),
+depois abas Brasil / Global / Mercado / Regulatório, cada indicador com
+métrica + variação + gráfico de série histórica + uma frase de leitura.
+Pontos fora do intervalo plausível (ver Controles internos, abaixo)
+aparecem como losango vermelho no gráfico e um aviso no texto — nunca
+escondidos. A seção Regulatório mostra a contagem de normas capturadas
 (`tipo = "regulatorio"`) com link direto para cada uma — hoje ainda vazia
 por padrão, porque este projeto não tem (ainda) uma fonte de ingestão de
 normativos (Bacen/CMN/Open Finance); o placeholder deixa isso explícito em
 vez de esconder a lacuna.
+
+```bash
+streamlit run streamlit_app.py
+```
+
+**No Posit Cloud**: depois de rodar o comando acima no Terminal, uma
+notificação/botão **"Open in Browser"** aparece no canto da aba do
+Terminal — clique nele para abrir o painel numa nova aba. Se não aparecer,
+acesse pela URL do projeto trocando a porta pela que o Streamlit imprimiu
+(normalmente 8501). O processo fica rodando enquanto a sessão estiver
+aberta — para encerrar, `Ctrl+C` no Terminal.
 
 ## Relatório mensal analítico
 

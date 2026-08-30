@@ -47,7 +47,7 @@ Controles concretos implementados para mitigar os riscos acima:
 
 Como os dados capturados viram informação útil e chegam a quem decide (você mesma):
 
-- **`dashboard.py`** — painel visual com KPI + série histórica por indicador; pontos fora do intervalo plausível aparecem destacados (losango vermelho) para revisão manual.
+- **`streamlit_app.py`** — painel visual interativo com métrica + série histórica por indicador; pontos fora do intervalo plausível aparecem destacados (losango vermelho) para revisão manual.
 - **`reports/relatorio.py`** — listagem bruta dos sinais mais recentes por módulo/status (visão operacional).
 - **`reports/relatorio_mensal.py`** — leitura analítica mês a mês (variação e classificação de tendência por regra simples), pensado para rodar mensalmente e formar uma série de "fotografias" do cenário.
 

@@ -47,9 +47,6 @@ python -m reports.relatorio --markdown --saida "relatorio_${data_hoje}.md"
 python -m reports.relatorio
 
 echo ""
-echo "== Painel visual =="
-python dashboard.py
-
-echo ""
-echo ">> Concluído. Relatório em relatorio_${data_hoje}.md, painel em dashboard.html."
+echo ">> Concluído. Relatório em relatorio_${data_hoje}.md."
+echo "   Painel visual (Streamlit): streamlit run streamlit_app.py"
 echo "   Relatório mensal analítico: python -m reports.relatorio_mensal (rode 1x/mês)."
