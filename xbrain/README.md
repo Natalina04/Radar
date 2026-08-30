@@ -27,7 +27,19 @@ reports/
   relatorio.py            # lista sinais recentes por módulo/status
 ```
 
-## Setup
+## Setup rápido (Posit Cloud ou local)
+
+```bash
+cd xbrain
+./rodar_tudo.sh
+```
+
+Isso cria o `.venv`, instala as dependências, copia `.env.example` para
+`.env` na primeira vez (`GITHUB_TOKEN` é opcional), roda a busca no GitHub
+e gera `relatorio_AAAA-MM-DD.md`. Edite `MEUS_PROJETOS` em
+`ingest/github_scan.py` antes de rodar, para refletir seus projetos reais.
+
+## Setup manual
 
 ```bash
 cd xbrain

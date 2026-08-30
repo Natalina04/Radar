@@ -25,7 +25,19 @@ reports/
   relatorio.py            # lista sinais recentes por módulo/status
 ```
 
-## Setup
+## Setup rápido (Posit Cloud ou local)
+
+```bash
+cd radar-economia-credito
+./rodar_tudo.sh
+```
+
+Isso cria o `.venv`, instala as dependências, copia `.env.example` para
+`.env` na primeira vez (preencha `FRED_API_KEY` depois), roda as três
+ingestões e gera `relatorio_AAAA-MM-DD.md`. Rode de novo sempre que quiser
+atualizar os dados — duplicatas são ignoradas automaticamente.
+
+## Setup manual
 
 ```bash
 cd radar-economia-credito
