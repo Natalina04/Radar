@@ -141,7 +141,10 @@ def gerar_dashboard():
         secoes.setdefault(meta["secao"], []).append((chave, meta))
 
     html = [
-        "<title>Radar Econômico</title>",
+        "<!DOCTYPE html>",
+        "<html lang=\"pt-BR\">",
+        "<head><meta charset=\"utf-8\"><title>Radar Econômico</title></head>",
+        "<body>",
         "<div style=\"font-family: system-ui, -apple-system, sans-serif; "
         f"max-width: 1000px; margin: 0 auto; padding: 24px; background: {COR_SUPERFICIE}; "
         f"color: {COR_TINTA_PRIMARIA};\">",
@@ -181,6 +184,7 @@ def gerar_dashboard():
         )
 
     html.append("</div>")
+    html.append("</body></html>")
 
     with open(SAIDA_HTML, "w", encoding="utf-8") as f:
         f.write("\n".join(html))
