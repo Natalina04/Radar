@@ -6,4 +6,7 @@ venv/
 *.db
 *.sqlite3
 relatorio_*.md
+dashboard.html
+logs/
+backups/
 .DS_Store

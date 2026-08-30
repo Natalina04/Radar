@@ -9,7 +9,10 @@ Rode com:  python -m ingest.fred
 import requests
 
 from config import FRED_API_KEY, HTTP_TIMEOUT_SECONDS, HTTP_USER_AGENT
+from logging_utils import registrar_execucao
 from storage.db import init_db, insert_signal
+from storage.tags import montar_tags
+from validacao import validar_valor
 
 # ---------------------------------------------------------------------------
 # PARÂMETROS — adicione/remova séries do FRED aqui.
@@ -56,31 +59,51 @@ def ingerir_series():
 
     init_db()
     total_novos = 0
+    total_anomalias = 0
+    total_falhas = 0
 
     for chave, meta in SERIES.items():
         try:
             observacoes = buscar_serie(meta["id"])
         except requests.RequestException as erro:
             print(f"[fred] falha ao buscar {chave} ({meta['id']}): {erro}")
+            total_falhas += 1
             continue
 
         for obs in observacoes:
             if obs.get("value") == ".":  # FRED usa "." para valor ausente
                 continue
+
+            valor = float(obs["value"])
+            valido = validar_valor(chave, valor)
+
             resumo = f"{meta['descricao']} em {obs['date']}: {obs['value']}"
+            if not valido:
+                resumo += " [ATENÇÃO: fora do intervalo plausível — revisar]"
+                print(f"[fred] anomalia: {resumo}")
+                total_anomalias += 1
+
+            tags = montar_tags(
+                "fred", chave, *(["anomalia"] if not valido else []),
+                data_ref=obs["date"], valor=obs["value"],
+            )
             inserido = insert_signal(
                 fonte=f"FRED - {meta['id']} ({chave})",
                 modulo="economia_credito",
                 tipo="macro_global",
                 resumo=resumo,
+                status="novo" if valido else "investigando",
                 evidencias=f"https://fred.stlouisfed.org/series/{meta['id']}",
-                tags=f"fred,{chave}",
+                tags=tags,
             )
             if inserido:
                 total_novos += 1
-                print(f"[fred] novo: {resumo}")
+                if valido:
+                    print(f"[fred] novo: {resumo}")
 
-    print(f"[fred] concluído — {total_novos} sinal(is) novo(s) inserido(s).")
+    print(f"[fred] concluído — {total_novos} sinal(is) novo(s) inserido(s) "
+          f"({total_anomalias} anomalia(s), {total_falhas} falha(s) de busca).")
+    registrar_execucao("fred", total_novos, total_falhas, total_anomalias)
 
 
 if __name__ == "__main__":

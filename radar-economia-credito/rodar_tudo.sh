@@ -25,6 +25,10 @@ if [ ! -f ".env" ]; then
 fi
 
 echo ""
+echo "== Backup do banco =="
+./backup_db.sh
+
+echo ""
 echo "== Bacen SGS (Selic, IPCA, câmbio) =="
 python -m ingest.bacen_sgs
 
@@ -43,4 +47,9 @@ python -m reports.relatorio --markdown --saida "relatorio_${data_hoje}.md"
 python -m reports.relatorio
 
 echo ""
-echo ">> Concluído. Relatório salvo em relatorio_${data_hoje}.md"
+echo "== Painel visual =="
+python dashboard.py
+
+echo ""
+echo ">> Concluído. Relatório em relatorio_${data_hoje}.md, painel em dashboard.html."
+echo "   Relatório mensal analítico: python -m reports.relatorio_mensal (rode 1x/mês)."
