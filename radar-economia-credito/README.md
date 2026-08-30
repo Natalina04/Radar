@@ -17,7 +17,8 @@ config.py             # config (RADAR_DB_PATH compartilhado, FRED_API_KEY)
 validacao.py           # intervalo plausível por indicador (controle de dado)
 logging_utils.py       # log de auditoria de execução (logs/ingestao.log)
 backup_db.sh           # backup do banco antes de cada rodada (backups/)
-dashboard.py           # painel visual (gera dashboard.html)
+analise.py             # classificação de tendência + frases de leitura (sem LLM)
+dashboard.py           # painel visual (gera dashboard.html — boletim de cenário)
 CONTROLES.md           # controles internos do projeto, mapeados ao COSO
 storage/
   schema.sql            # DDL da tabela "sinais"
@@ -95,11 +96,21 @@ python -m reports.relatorio_mensal
 
 ## Painel visual
 
-`dashboard.py` gera `dashboard.html` — um arquivo único, sem servidor, com
-um KPI (valor mais recente + variação) e um gráfico de série histórica por
-indicador, agrupados em Brasil / Global / Mercado. Pontos que ficaram fora
-do intervalo plausível (ver Controles internos, abaixo) aparecem como
-losango vermelho, com legenda própria — nunca escondidos.
+`dashboard.py` gera `dashboard.html` — um boletim de cenário, não uma lista
+de gráficos soltos: resumo executivo em prosa (leitura do cenário por
+seção), depois Brasil / Global / Mercado / Regulatório, cada indicador com
+KPI + variação + gráfico de série histórica + uma frase de leitura. Pontos
+fora do intervalo plausível (ver Controles internos, abaixo) aparecem como
+círculo vermelho no gráfico e um aviso no texto — nunca escondidos.
+
+Os gráficos são **SVG puro, sem JavaScript** (sem Plotly, sem nenhuma
+dependência de visualização) — funcionam em qualquer visualizador,
+inclusive o preview embutido do Posit Cloud, que bloqueia `<script>` por
+segurança. A seção Regulatório mostra a contagem de normas capturadas
+(`tipo = "regulatorio"`) com link direto para cada uma — hoje ainda vazia
+por padrão, porque este projeto não tem (ainda) uma fonte de ingestão de
+normativos (Bacen/CMN/Open Finance); o placeholder deixa isso explícito em
+vez de esconder a lacuna.
 
 ## Relatório mensal analítico
 

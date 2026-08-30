@@ -16,6 +16,7 @@ Rode uma vez por mês (ou quando quiser reavaliar o cenário):
 from collections import defaultdict
 from datetime import datetime, timezone
 
+from analise import classificar, formatar_numero
 from storage.db import get_recent_signals
 from storage.tags import parse_tags
 
@@ -32,9 +33,6 @@ INDICADORES = {
     "sp500": "S&P 500",
     "vix": "VIX",
 }
-
-# variação percentual abaixo disso (em módulo) é classificada como "estável"
-LIMIAR_ESTAVEL_PCT = 0.5
 # ---------------------------------------------------------------------------
 
 
@@ -76,14 +74,6 @@ def meses_com_dado_valido(pontos_por_mes):
 
 def ultimo_valor_do_mes(pontos_do_mes):
     return sorted(pontos_do_mes)[-1][1]
-
-
-def classificar_variacao(delta_pct):
-    if delta_pct is None:
-        return "sem mês anterior para comparar"
-    if abs(delta_pct) < LIMIAR_ESTAVEL_PCT:
-        return "estável"
-    return "em alta" if delta_pct > 0 else "em queda"
 
 
 def montar_relatorio():
@@ -129,15 +119,15 @@ def montar_relatorio():
         else:
             mes_anterior, valor_anterior, delta_pct = "—", None, None
 
-        variacao_txt = f"{delta_pct:+.2f}%" if delta_pct is not None else "—"
-        valor_anterior_txt = f"{valor_anterior:.2f}" if valor_anterior is not None else "—"
+        variacao_txt = f"{formatar_numero(delta_pct, forcar_sinal=True)}%" if delta_pct is not None else "—"
+        valor_anterior_txt = formatar_numero(valor_anterior) if valor_anterior is not None else "—"
         linhas.append(
-            f"| {titulo} | {mes_atual} | {valor_atual:.2f} | {mes_anterior} | "
+            f"| {titulo} | {mes_atual} | {formatar_numero(valor_atual)} | {mes_anterior} | "
             f"{valor_anterior_txt} | {variacao_txt} |"
         )
 
-        classificacao = classificar_variacao(delta_pct)
-        detalhe = f" ({delta_pct:+.2f}% no mês)" if delta_pct is not None else ""
+        classificacao = classificar(delta_pct)
+        detalhe = f" ({formatar_numero(delta_pct, forcar_sinal=True)}% no mês)" if delta_pct is not None else ""
         comentarios.append(f"- **{titulo}**: {classificacao}{detalhe}.")
 
     if not algum_dado:
