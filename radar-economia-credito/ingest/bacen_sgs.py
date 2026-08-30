@@ -2,7 +2,7 @@
 
 API pública, sem chave: https://api.bcb.gov.br/dados/serie/bcdata.sgs.<codigo>/dados
 
-Rode com:  python -m ingest_economia.bacen_sgs
+Rode com:  python -m ingest.bacen_sgs
 """
 
 import requests

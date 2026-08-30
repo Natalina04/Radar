@@ -5,7 +5,7 @@ registra os achados como "candidatos a incorporação" na tabela sinais.
 Isto NUNCA baixa ou copia código — só a metadata do repositório (nome,
 descrição, licença, stars, linguagem, tópicos) para eu revisar depois.
 
-Rode com:  python -m ingest_remanufatura.github_scan
+Rode com:  python -m ingest.github_scan
 """
 
 import requests

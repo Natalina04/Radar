@@ -3,7 +3,7 @@
 Requer uma API key gratuita: https://fred.stlouisfed.org/docs/api/api_key.html
 Salve em um arquivo .env na raiz do projeto como FRED_API_KEY=xxxxx
 
-Rode com:  python -m ingest_economia.fred
+Rode com:  python -m ingest.fred
 """
 
 import requests

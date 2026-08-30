@@ -1,7 +1,7 @@
 """Ingestão de oscilações de curto prazo (mercado de ações, volatilidade)
 via yfinance. Dados diários (fechamento), não intradiário.
 
-Rode com:  python -m ingest_economia.mercado
+Rode com:  python -m ingest.mercado
 """
 
 import yfinance as yf
